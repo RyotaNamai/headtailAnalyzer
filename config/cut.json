@@ -1,0 +1,28 @@
+{
+    "activate" : {
+        "unixtime" : 0,
+        "length"   : 1,
+        "x"        : 1,
+        "y"        : 1,
+        "x_ave"    : 0,
+        "y_ave"    : 0,
+        "ene_low"  : 0,
+        "ene_high" : 1
+    },
+    "unixtime_min" : 0,
+    "unixtime_max" : 2147483647,
+    "length_min"   : 13,
+    "length_max"   : 17,
+    "x_min"        : -14.0,
+    "x_max"        : 14.0,
+    "y_min"        : -10.0,
+    "y_max"        : 14.0,
+    "x_ave_min"    : -15.0,
+    "x_ave_max"    : 15.0,
+    "y_ave_min"    : -15.0,
+    "y_ave_max"    : 15.0,
+    "ene_low_min"  : 0.0,
+    "ene_low_max"  : 10000.0,
+    "ene_high_min" : 4800.0,
+    "ene_high_max" : 5200.0
+}
