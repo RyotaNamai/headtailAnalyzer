@@ -1,0 +1,8 @@
+.vscode
+build
+*.dat
+*.png
+*.pdf
+*.root
+bin/eventSelector
+bin/headtailAnalyzer
