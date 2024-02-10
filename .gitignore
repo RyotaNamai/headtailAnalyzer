@@ -1,7 +1,8 @@
 .vscode
 build
-bin
 *.dat
 *.png
 *.pdf
 *.root
+bin/eventSelector
+bin/headtailAnalyzer

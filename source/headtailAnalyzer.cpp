@@ -1,9 +1,9 @@
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <string>
 #include <vector>
 #include <numeric>
+#include <getopt.h>
 
 #include "TStyle.h"
 #include "TFile.h"
@@ -17,10 +17,9 @@
 
 int main(int argc, char** argv) {
     if (argc < 2) {
-        std::cerr << "Usage: " << argv[0] << " [evtNum]" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " [-s] [evtNum]" << std::endl;
         return 1;
     }
-    std::string evtNum = argv[1];
 
     int opt;
     int flag_stat = 0;
@@ -34,6 +33,8 @@ int main(int argc, char** argv) {
                 break;
         }
     }
+
+    std::string evtNum = argv[argc-1];
 
     const Int_t NRGBs = 5;
     const Int_t NCont = 255;
@@ -52,6 +53,26 @@ int main(int argc, char** argv) {
         return 1;
     }
     TTree *tree = (TTree*)file->Get("cvvar_tree");
+
+    if (flag_stat) {
+        TH1D *hist_x = new TH1D("hist_x", "", 768, -15., 15.);
+        tree->Draw("x_xz>>hist_x", Form("evtNum==%s", evtNum.c_str()), "bar");
+        TH1D *hist_y = new TH1D("hist_y", "", 768, -15., 15.);
+        tree->Draw("y_yz>>hist_y", Form("evtNum==%s", evtNum.c_str()), "bar");
+        TF1 *fit_x = new TF1("fit_x", "pol1", -15., 15.);
+        hist_x->Fit("fit_x", "R");
+        TF1 *fit_y = new TF1("fit_y", "pol1", -15., 15.);
+        hist_y->Fit("fit_y", "R");
+        std::ofstream ofs;
+        ofs.open("./slopeList.dat", std::ios::app);
+        ofs << evtNum << "\t" << fit_x->GetParameter(1) << "\t" << fit_x->GetParError(1) << "\t" << fit_y->GetParameter(1) << "\t" << fit_y->GetParError(1) << std::endl;
+        ofs.close();
+
+        file->Close();
+        delete file;
+
+        return 0;
+    }
 
     //#########################################//
     // canvas
@@ -78,7 +99,6 @@ int main(int argc, char** argv) {
     hist_xz->GetYaxis()->SetTitle("z (cm)");
     pad2->cd();
     TH1D *hist_x = new TH1D("hist_x", "", 768, -15., 15.);
-    hist_x->SetTitleSize(0.2, "Y");
     hist_x->SetFillColorAlpha(kBlue, 0.1);
     tree->Draw("x_xz>>hist_x", Form("evtNum==%s", evtNum.c_str()), "bar");
     pad5->cd();
@@ -134,13 +154,14 @@ int main(int argc, char** argv) {
     slope_y->SetTextSize(0.2);
     slope_y->Draw();
 
-    if (flag_stat == 0) {
-        c1->SaveAs(Form("headtail_%s.png", evtNum.c_str()));
-    } else {
-        std::ofstream ofs("./slopeList.dat");
-        ofs << evtNum << "\t" << fit_x->GetParameter(1) << "\t" << fit_x->GetParError(1) << std::endl;
-        ofs.close();
-    }
+    // if (flag_stat == 0) {
+    c1->SaveAs(Form("headtail_%s.png", evtNum.c_str()));
+    // } else {
+    //     std::ofstream ofs;
+    //     ofs.open("./slopeList.dat");
+    //     ofs << evtNum << "\t" << fit_x->GetParameter(1) << "\t" << fit_x->GetParError(1) << std::endl;
+    //     ofs.close();
+    // }
 
     file->Close();
     delete file;
