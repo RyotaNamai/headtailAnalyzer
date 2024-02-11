@@ -54,15 +54,21 @@ int main(int argc, char** argv) {
     }
     TTree *tree = (TTree*)file->Get("cvvar_tree");
 
+    //#########################################//
+    // multi event analysis
+    //#########################################// 
+
+    // TODO GetEntryでまとめて読み込んだ方がずっと早いのであとで修正する
     if (flag_stat) {
+        TCanvas *cvs = new TCanvas("cvs", "cvs", 400, 400);
         TH1D *hist_x = new TH1D("hist_x", "", 768, -15., 15.);
         tree->Draw("x_xz>>hist_x", Form("evtNum==%s", evtNum.c_str()), "bar");
         TH1D *hist_y = new TH1D("hist_y", "", 768, -15., 15.);
         tree->Draw("y_yz>>hist_y", Form("evtNum==%s", evtNum.c_str()), "bar");
         TF1 *fit_x = new TF1("fit_x", "pol1", -15., 15.);
-        hist_x->Fit("fit_x", "R");
+        hist_x->Fit("fit_x", "R q");
         TF1 *fit_y = new TF1("fit_y", "pol1", -15., 15.);
-        hist_y->Fit("fit_y", "R");
+        hist_y->Fit("fit_y", "R q");
         std::ofstream ofs;
         ofs.open("./slopeList.dat", std::ios::app);
         ofs << evtNum << "\t" << fit_x->GetParameter(1) << "\t" << fit_x->GetParError(1) << "\t" << fit_y->GetParameter(1) << "\t" << fit_y->GetParError(1) << std::endl;
@@ -75,7 +81,7 @@ int main(int argc, char** argv) {
     }
 
     //#########################################//
-    // canvas
+    // single event analysis
     //#########################################// 
 
     TCanvas *c1 = new TCanvas("c1", "c1", 800, 400);
@@ -132,9 +138,6 @@ int main(int argc, char** argv) {
     text2->SetTextSize(0.5);
     text2->Draw();
 
-    //#########################################//
-    // fit
-    //#########################################//
     // x-z
     pad2->cd();
     TF1 *fit_x = new TF1("fit_x", "pol1", -15., 15.);
@@ -154,14 +157,7 @@ int main(int argc, char** argv) {
     slope_y->SetTextSize(0.2);
     slope_y->Draw();
 
-    // if (flag_stat == 0) {
     c1->SaveAs(Form("headtail_%s.png", evtNum.c_str()));
-    // } else {
-    //     std::ofstream ofs;
-    //     ofs.open("./slopeList.dat");
-    //     ofs << evtNum << "\t" << fit_x->GetParameter(1) << "\t" << fit_x->GetParError(1) << std::endl;
-    //     ofs.close();
-    // }
 
     file->Close();
     delete file;

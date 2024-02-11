@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
         if (bool_ene_high == true && (ene_high < ene_high_min || ene_high > ene_high_max)) continue;
         if (bool_unixtime == true && (unixtime < unixtime_min || unixtime > unixtime_max)) continue;
         ofs << evtNum << std::endl;
-        std::cout << "Progress: " << i << " / " << nEntries << "\t[" << Form("%.2f %%]", (double)i / (double)nEntries * 100) << "\r" << std::flush;
+        std::cout << "Scanning : " << i << " / " << nEntries << "\t[" << Form("%.2f %%]", (double)i / (double)nEntries * 100) << "\r" << std::flush;
     }
     std::cout << ">>> Event selection finished." << std::endl;
     file->Close();

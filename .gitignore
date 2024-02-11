@@ -6,3 +6,4 @@ build
 *.root
 bin/eventSelector
 bin/headtailAnalyzer
+bin/slopeVisualizer

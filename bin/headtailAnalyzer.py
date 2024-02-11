@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import sys
 import subprocess
 import argparse
 
@@ -13,7 +14,15 @@ def run_headtailAnalyzer(flag_stat, evtNum):
         cmd = ["headtailAnalyzer", evtNum]
     subprocess.run(cmd, shell=False)
 
+def run_slopeVisualizer():
+    cmd = "slopeVisualizer"
+    subprocess.run(cmd, shell=True)
+
 def main():
+    if len(sys.argv) < 2:
+        print("Usage: headtailAnalyzer.py [-s] [evtNum]")
+        exit(1)
+
     parser = argparse.ArgumentParser(description="Run headtailAnalyzer")
     parser.add_argument("evtNum", help="Event number", nargs="*")
     parser.add_argument("-s", "--stat", help="Run headtailAnalyzer in stat mode", action="store_true")
@@ -31,8 +40,11 @@ def main():
             event_data = [x.strip() for x in event_data]
         with open("slopeList.dat", "w") as f:
             f.write("# evtNum\txz\txz_error\tyz\tyz_error\n")
-        for event in event_data:
+        print("calculating slope...")
+        for count, event in enumerate(event_data):
             run_headtailAnalyzer(flag_stat, event)
+            print("Processing : "+str(count)+"/"+str(len(event_data))+"\r", end="")
+        run_slopeVisualizer()
     else:
         run_headtailAnalyzer(flag_stat, args.evtNum[0])
 
